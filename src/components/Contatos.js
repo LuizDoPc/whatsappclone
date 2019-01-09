@@ -6,10 +6,6 @@ import _ from "lodash";
 import { Actions } from "react-native-router-flux";
 
 class Contatos extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentWillMount() {
     this.props.contatosUsuarioFetch();
     this.criaFonteDeDados(this.props.contatos);
@@ -56,7 +52,9 @@ class Contatos extends Component {
       <ListView
         enableEmptySections
         dataSource={this.fonteDeDados}
-        renderRow={this.renderRow}
+        renderRow={data => {
+          return this.renderRow(data);
+        }}
       />
     );
   }

@@ -3,7 +3,9 @@ import {
   ADICIONA_CONTATO_ERRO,
   ADICIONA_CONTATO_SUCESSO,
   LISTA_CONTATO_USUARIO,
-  MODIFICA_MENSAGEM
+  MODIFICA_MENSAGEM,
+  LISTA_CONVERSA_USUARIO,
+  ENVIA_MENSAGEM_SUCESSO
 } from "./types";
 import b64 from "base-64";
 import firebase from "@firebase/app";
@@ -26,7 +28,6 @@ export const adicionaContato = email => {
       .ref(`/contatos/${email64}`)
       .once("value")
       .then(snapshot => {
-        console.log(snapshot);
         if (snapshot.val()) {
           const dadosUsuario = _.first(_.values(snapshot.val()));
 
@@ -93,7 +94,6 @@ export const modificaMensagem = text => {
 };
 
 export const enviaMensagem = (mensagem, contatoNome, contatoEmail) => {
-  console.log(mensagem);
   return dispatch => {
     const { currentUser } = firebase.auth();
     const usuarioEmail64 = b64.encode(currentUser.email);
@@ -108,7 +108,11 @@ export const enviaMensagem = (mensagem, contatoNome, contatoEmail) => {
           .database()
           .ref(`/mensagens/${contatoEmail64}/${usuarioEmail64}`)
           .push({ mensagem, tipo: "r" })
-          .then(() => {});
+          .then(() => {
+            dispatch({
+              type: ENVIA_MENSAGEM_SUCESSO
+            });
+          });
       })
       .then(() => {
         firebase
@@ -126,7 +130,8 @@ export const enviaMensagem = (mensagem, contatoNome, contatoEmail) => {
           .ref(`/contatos/${usuarioEmail64}`)
           .once("value")
           .then(snapshot => {
-            let nome = _.first(_.values(snapshot.val())).nome;
+            let valores = _.first(_.values(snapshot.val()));
+            let nome = valores.nome;
             firebase
               .database()
               .ref(`/usuario_conversas/${contatoEmail64}/${usuarioEmail64}`)
@@ -141,7 +146,8 @@ export const enviaMensagem = (mensagem, contatoNome, contatoEmail) => {
 };
 
 export const conversaUsuarioFetch = contatoEmail => {
-  let usuarioEmail64 = b64.enconde(firebase.auth().currentUser.email);
+  const { currentUser } = firebase.auth();
+  let usuarioEmail64 = b64.encode(currentUser.email);
   let contatoEmail64 = b64.encode(contatoEmail);
 
   return dispatch => {

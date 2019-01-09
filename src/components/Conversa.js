@@ -1,29 +1,92 @@
 import React, { Component } from "react";
-import { View, TextInput, Text, Image, TouchableHighlight } from "react-native";
 import { connect } from "react-redux";
+import _ from "lodash";
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  TouchableHighlight,
+  ListView
+} from "react-native";
 import {
   modificaMensagem,
   enviaMensagem,
   conversaUsuarioFetch
 } from "../actions/AppActions";
 
-import _ from "lodash";
-
-const envia = require("../img/enviar_mensagem.png");
-
 class Conversa extends Component {
   componentWillMount() {
     this.props.conversaUsuarioFetch(this.props.contatoEmail);
+    this.criaFonteDeDados(this.props.conversa);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.props.conversaUsuarioFetch(nextProps.contatoEmail);
+    if(this.props.contatoEmail != nextProps.contatoEmail)
+      this.props.conversaUsuarioFetch(nextProps.contatoEmail);
+    this.criaFonteDeDados(nextProps.conversa);
+  }
+
+  criaFonteDeDados(conversa) {
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+    this.dataSource = ds.cloneWithRows(conversa);
   }
 
   _enviaMensagem() {
     const { mensagem, contatoNome, contatoEmail } = this.props;
-    console.log("oie");
+
     this.props.enviaMensagem(mensagem, contatoNome, contatoEmail);
+  }
+
+  renderRow(texto) {
+    if (texto.tipo == "e") {
+      return (
+        <View
+          style={{
+            alignItems: "flex-end",
+            marginTop: 5,
+            marginBottom: 5,
+            marginLeft: 40
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              color: "black",
+              padding: 10,
+              backgroundColor: "#DBF5B4",
+              elevation: 1
+            }}
+          >
+            {texto.mensagem}
+          </Text>
+        </View>
+      );
+    }
+    return (
+      <View
+        style={{
+          alignItems: "flex-start",
+          marginTop: 5,
+          marginBottom: 5,
+          marginRight: 40
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            color: "black",
+            padding: 10,
+            backgroundColor: "#F7F7F7",
+            elevation: 1
+          }}
+        >
+          {texto.mensagem}
+        </Text>
+      </View>
+    );
   }
 
   render() {
@@ -32,13 +95,22 @@ class Conversa extends Component {
         style={{
           flex: 1,
           marginTop: 50,
-          backgroundColor: "#EEE4DC",
+          backgroundColor: "#eee4dc",
           padding: 10
         }}
       >
-        <View style={{ flex: 1, paddingBottom: 20 }} />
+        <View style={{ flex: 1, paddingBottom: 20 }}>
+          <ListView
+            enableEmptySections
+            dataSource={this.dataSource}
+            renderRow={this.renderRow}
+          />
+        </View>
+
         <View style={{ flexDirection: "row", height: 60 }}>
           <TextInput
+            value={this.props.mensagem}
+            onChangeText={texto => this.props.modificaMensagem(texto)}
             style={{
               flex: 5,
               fontSize: 18,
@@ -49,16 +121,13 @@ class Conversa extends Component {
               backgroundColor: "white",
               paddingHorizontal: 50
             }}
-            value={this.props.mensagem}
-            onChangeText={text => {
-              this.props.modificaMensagem(text);
-            }}
           />
+
           <TouchableHighlight
-            underlayColor="#fff"
             onPress={this._enviaMensagem.bind(this)}
+            underlayColor="#fff"
           >
-            <Image source={envia} />
+            <Image source={require("../img/enviar_mensagem.png")} />
           </TouchableHighlight>
         </View>
       </View>
@@ -66,7 +135,7 @@ class Conversa extends Component {
   }
 }
 
-const mapStateToProps = state => {
+mapStateToProps = state => {
   const conversa = _.map(state.ListaConversaReducer, (val, uid) => {
     return { ...val, uid };
   });
