@@ -31,6 +31,7 @@ class Contatos extends Component {
             title: data.nome
           });
         }}
+        underlayColor="white"
       >
         <View
           style={{

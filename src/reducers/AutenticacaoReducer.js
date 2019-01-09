@@ -33,7 +33,8 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         erroCadastro: action.payload,
         loadingCadastro: false,
-        email: ""
+        email: "",
+        senha: ""
       };
     case CADASTRO_USUARIO_SUCESSO:
       return { ...state, nome: "", senha: "", loadingCadastro: false };
