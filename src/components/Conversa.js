@@ -1,19 +1,8 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import _ from "lodash";
-import {
-  View,
-  Text,
-  TextInput,
-  Image,
-  TouchableHighlight,
-  ListView
-} from "react-native";
-import {
-  modificaMensagem,
-  enviaMensagem,
-  conversaUsuarioFetch
-} from "../actions/AppActions";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import _ from 'lodash';
+import { View, Text, TextInput, Image, TouchableHighlight, ListView } from 'react-native';
+import { modificaMensagem, enviaMensagem, conversaUsuarioFetch } from '../actions/AppActions';
 
 class Conversa extends Component {
   componentWillMount() {
@@ -22,8 +11,7 @@ class Conversa extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(this.props.contatoEmail != nextProps.contatoEmail)
-      this.props.conversaUsuarioFetch(nextProps.contatoEmail);
+    if (this.props.contatoEmail != nextProps.contatoEmail) this.props.conversaUsuarioFetch(nextProps.contatoEmail);
     this.criaFonteDeDados(nextProps.conversa);
   }
 
@@ -41,11 +29,11 @@ class Conversa extends Component {
   }
 
   renderRow(texto) {
-    if (texto.tipo == "e") {
+    if (texto.tipo == 'e') {
       return (
         <View
           style={{
-            alignItems: "flex-end",
+            alignItems: 'flex-end',
             marginTop: 5,
             marginBottom: 5,
             marginLeft: 40
@@ -54,9 +42,9 @@ class Conversa extends Component {
           <Text
             style={{
               fontSize: 18,
-              color: "black",
+              color: 'black',
               padding: 10,
-              backgroundColor: "#DBF5B4",
+              backgroundColor: '#DBF5B4',
               elevation: 1
             }}
           >
@@ -68,7 +56,7 @@ class Conversa extends Component {
     return (
       <View
         style={{
-          alignItems: "flex-start",
+          alignItems: 'flex-start',
           marginTop: 5,
           marginBottom: 5,
           marginRight: 40
@@ -77,9 +65,9 @@ class Conversa extends Component {
         <Text
           style={{
             fontSize: 18,
-            color: "black",
+            color: 'black',
             padding: 10,
-            backgroundColor: "#F7F7F7",
+            backgroundColor: '#F7F7F7',
             elevation: 1
           }}
         >
@@ -95,7 +83,7 @@ class Conversa extends Component {
         style={{
           flex: 1,
           marginTop: 50,
-          backgroundColor: "#eee4dc",
+          backgroundColor: '#eee4dc',
           padding: 10
         }}
       >
@@ -104,10 +92,16 @@ class Conversa extends Component {
             enableEmptySections
             dataSource={this.dataSource}
             renderRow={this.renderRow}
+            onContentSizeChange={() => {
+              this.listView.scrollToEnd();
+            }}
+            ref={listView => {
+              this.listView = listView;
+            }}
           />
         </View>
 
-        <View style={{ flexDirection: "row", height: 60 }}>
+        <View style={{ flexDirection: 'row', height: 60 }}>
           <TextInput
             value={this.props.mensagem}
             onChangeText={texto => this.props.modificaMensagem(texto)}
@@ -115,19 +109,16 @@ class Conversa extends Component {
               flex: 5,
               fontSize: 18,
               borderWidth: 0.5,
-              borderColor: "#CCC",
+              borderColor: '#CCC',
               borderRadius: 50,
               height: 60,
-              backgroundColor: "white",
+              backgroundColor: 'white',
               paddingHorizontal: 50
             }}
           />
 
-          <TouchableHighlight
-            onPress={this._enviaMensagem.bind(this)}
-            underlayColor="#fff"
-          >
-            <Image source={require("../img/enviar_mensagem.png")} />
+          <TouchableHighlight onPress={this._enviaMensagem.bind(this)} underlayColor="#fff">
+            <Image source={require('../img/enviar_mensagem.png')} />
           </TouchableHighlight>
         </View>
       </View>
